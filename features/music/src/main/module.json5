@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "music",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

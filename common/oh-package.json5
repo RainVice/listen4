@@ -1,0 +1,10 @@
+{
+  "license": "Apache-2.0",
+  "devDependencies": {},
+  "author": "",
+  "name": "@listen4/common",
+  "description": "listen4 项目通用模块，其中有通用工具类，通用常量等...",
+  "main": "Index.ets",
+  "version": "1.0.0",
+  "dependencies": {}
+}

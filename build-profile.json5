@@ -1,0 +1,61 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Rainvice\\.ohos\\config\\auto_debug_Listen4_com.rainvice.listen4_2850086000446513801.cer",
+          "storePassword": "0000001B82704325B3EC90B602A7B46D0FE3E50BA398B8D0FABC469BFC5BF117DA3677D0C083C1607E8B48",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B39129F19C3D69F8DA69C0258F95A209CCC0F785AB81BCD2A32569386FE69A8A487FE09C699DC61",
+          "profile": "C:\\Users\\Rainvice\\.ohos\\config\\auto_debug_Listen4_com.rainvice.listen4_2850086000446513801.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Rainvice\\.ohos\\config\\auto_debug_Listen4_com.rainvice.listen4_2850086000446513801.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 9,
+    "compatibleSdkVersion": 9,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "common",
+      "srcPath": "./common"
+    },
+    {
+      "name": "music",
+      "srcPath": "./features/music"
+    },
+    {
+      "name": "apis",
+      "srcPath": "./features/apis"
+    }
+  ]
+}

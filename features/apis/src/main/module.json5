@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "apis",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

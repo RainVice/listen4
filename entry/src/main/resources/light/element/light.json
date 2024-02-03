@@ -1,0 +1,17 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "bottom_navigation_color",
+      "value": "#F7B787"
+    },
+    {
+      "name": "bottom_navigation_color_selected",
+      "value": "#EE7214"
+    }
+
+  ]
+}
