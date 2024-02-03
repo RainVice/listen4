@@ -1,42 +1,49 @@
-import { BarHeader, LayoutConstants, Logger} from '@listen4/common'
-import {Netease} from '@listen4/apis'
+import { BarHeader, LayoutConstants } from '@listen4/common';
+import { Netease, PersonalizedResult } from '@listen4/apis';
+
+
+@Preview
 @Component
-export struct MusicRecommend{
+export struct MusicRecommend {
+  @State playList: PersonalizedResult[] = [];
 
-  build(){
+  async aboutToAppear() {
+    this.playList = (await Netease.PlayList.personalized())
+  }
 
-    Column(){
-      BarHeader({title: '音乐'})
+  build() {
 
-      Scroll(){
-        Column(){
+    Column() {
+      BarHeader({ title: '音乐' })
+      Scroll() {
+        Column() {
 
           Text('推荐歌单>')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
 
-          Button('获取')
-            .onClick(async () => {
-              let obj = await Netease.User.anonimous();
-              Logger.infoWithTag('结果',JSON.stringify(obj));
-            })
+          List({ space: 10 }) {
 
+            ForEach(this.playList, (item: PersonalizedResult, index: number) => {
+              ListItem() {
+
+                Text(item.name)
+
+              }
+            }, (item) => JSON.stringify(item))
+
+          }
+          .listDirection(Axis.Horizontal)
 
         }
         .alignItems(HorizontalAlign.Start)
         .width(LayoutConstants.FULL_PERCENT)
       }
-      .padding({ left: 20,right: 20 })
+      .padding({ left: 20, right: 20 })
 
     }
     .height(LayoutConstants.FULL_PERCENT)
     .width(LayoutConstants.FULL_PERCENT)
 
   }
-
-
-  async aaa(): Promise<string>{
-    return 'string';
-  }
-
 }
