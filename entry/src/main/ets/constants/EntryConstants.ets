@@ -1,4 +1,4 @@
-export class ComponentConstants {
+export class IndexConstants {
   /**
    * 首页索引
    */
@@ -26,6 +26,9 @@ export class ComponentConstants {
 }
 
 
-export class DataConstants{
+export class DataConstants {
   static readonly PREFERENCES_COOKIE_KEY: string = 'cookie';
 }
+
+
+

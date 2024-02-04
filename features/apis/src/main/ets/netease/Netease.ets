@@ -2,6 +2,10 @@ import http from '@ohos.net.http';
 import { NeteaseConstants } from '../constants/NeteaseConstants';
 import { Api, Options } from './Api';
 import { Personalized, PersonalizedResult } from './Bean';
+import { KVDBUtil } from '@listen4/common';
+
+
+const KVDBKey: string = 'neteaseKV';
 
 export namespace Netease {
 
@@ -116,17 +120,35 @@ export namespace Netease {
    */
   export class PlayList {
     /**
-     * 推荐歌单
+     * 获取推荐歌单
+     * @param context 上下文
+     * @param local 是否读取本机缓存
+     * @returns
      */
-    public static async personalized(): Promise<PersonalizedResult[]> {
-      let url = 'weapi/personalized/playlist'
-      let data = {
-        limit: 30,
-        total: true,
-        n: 1000
+    public static async personalized(local: boolean = true): Promise<PersonalizedResult[]> {
+
+      const kvdb = AppStorage.Get<KVDBUtil>(KVDBKey)
+      try {
+        if (!local) {
+          throw new Error('network');
+        }
+        let data = await kvdb.get('PlayList.personalized') as string;
+        return (JSON.parse(data) as Personalized).result;
       }
-      let result = await Api.send(http.RequestMethod.POST, url, data);
-      return (result.result as Personalized).result
+      catch (err) {
+        // 没有本地缓存，请求
+        let url = 'weapi/personalized/playlist'
+        let data = {
+          limit: 30,
+          total: true,
+          n: 1000
+        }
+        let result = await Api.send(http.RequestMethod.POST, url, data);
+        let res = result.result as Personalized;
+        // 保存到本地
+        await kvdb.put('PlayList.personalized', JSON.stringify(res));
+        return res.result;
+      }
     }
   }
 

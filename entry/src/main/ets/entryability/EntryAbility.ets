@@ -3,10 +3,12 @@ import hilog from '@ohos.hilog';
 import UIAbility from '@ohos.app.ability.UIAbility';
 import Want from '@ohos.app.ability.Want';
 import window from '@ohos.window';
-import { PreferencesUtil } from '@listen4/common';
+import { KVDBUtil, PreferencesUtil } from '@listen4/common';
 import { DataConstants } from '../constants/EntryConstants';
 import { Netease } from '@listen4/apis/src/main/ets/netease/Netease';
 import { NeteaseConstants } from '@listen4/apis';
+import App from '@system.app';
+import distributedKVStore from '@ohos.data.distributedKVStore';
 
 
 export default class EntryAbility extends UIAbility {
@@ -15,19 +17,22 @@ export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
+    AppStorage.SetOrCreate<KVDBUtil>('neteaseKV',new KVDBUtil(this.context,'netease', this.context.abilityInfo.bundleName))
+
+
     // 保存 | 读取 cookie
     this.listen4Preferences = new PreferencesUtil(this.context, this.context.abilityInfo.moduleName);
     this.listen4Preferences.has(DataConstants.PREFERENCES_COOKIE_KEY).then(async (has) => {
-      if (!has) {
+      if (has) {
+        let cookie: object = JSON.parse((await this.listen4Preferences.get(DataConstants.PREFERENCES_COOKIE_KEY, "{}")) as string)
+        AppStorage.Set<object>(NeteaseConstants.NETEASE_COOKIE, cookie);
+      } else {
         await Netease.User.anonimous();
         this.listen4Preferences.put(
           DataConstants.PREFERENCES_COOKIE_KEY,
           JSON.stringify(AppStorage.Get<object>(NeteaseConstants.NETEASE_COOKIE))
         );
         this.listen4Preferences.flush();
-      }else{
-        let cookie: object = JSON.parse((await this.listen4Preferences.get(DataConstants.PREFERENCES_COOKIE_KEY,"{}")) as string)
-        AppStorage.Set<object>(NeteaseConstants.NETEASE_COOKIE,cookie);
       }
     })
 

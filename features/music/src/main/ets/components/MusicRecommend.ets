@@ -1,11 +1,14 @@
 import { BarHeader, LayoutConstants } from '@listen4/common';
 import { Netease, PersonalizedResult } from '@listen4/apis';
+import { RecommendPlaylistItem } from './RecommendPlaylistItem';
+import { MusicRecommendConstants } from '../constants/MusicConstants';
 
 
 @Preview
 @Component
 export struct MusicRecommend {
   @State playList: PersonalizedResult[] = [];
+  scroller: Scroller = new Scroller();
 
   async aboutToAppear() {
     this.playList = (await Netease.PlayList.personalized())
@@ -14,25 +17,22 @@ export struct MusicRecommend {
   build() {
 
     Column() {
-      BarHeader({ title: '音乐' })
+      BarHeader({ title: MusicRecommendConstants.TITLE })
       Scroll() {
         Column() {
-
-          Text('推荐歌单>')
+          Text(MusicRecommendConstants.RECOMMEND_PLAYLIST)
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
-
-          List({ space: 10 }) {
-
-            ForEach(this.playList, (item: PersonalizedResult, index: number) => {
+          List({ space: 10, scroller: this.scroller }) {
+            ForEach(this.playList, (item: PersonalizedResult) => {
               ListItem() {
-
-                Text(item.name)
-
+                RecommendPlaylistItem({ personalizedResult: item })
               }
             }, (item) => JSON.stringify(item))
-
           }
+          .width(LayoutConstants.FULL_PERCENT)
+          .height(250)
+          .margin({ top: 20 })
           .listDirection(Axis.Horizontal)
 
         }
