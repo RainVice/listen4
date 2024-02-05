@@ -7,17 +7,14 @@ import { KVDBUtil, PreferencesUtil } from '@listen4/common';
 import { DataConstants } from '../constants/EntryConstants';
 import { Netease } from '@listen4/apis/src/main/ets/netease/Netease';
 import { NeteaseConstants } from '@listen4/apis';
-import App from '@system.app';
-import distributedKVStore from '@ohos.data.distributedKVStore';
 
 
 export default class EntryAbility extends UIAbility {
   listen4Preferences: PreferencesUtil;
-
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
-    AppStorage.SetOrCreate<KVDBUtil>('neteaseKV',new KVDBUtil(this.context,'netease', this.context.abilityInfo.bundleName))
+    AppStorage.SetOrCreate<KVDBUtil>('neteaseKV', new KVDBUtil(this.context, 'netease', this.context.abilityInfo.bundleName))
 
 
     // 保存 | 读取 cookie

@@ -1,8 +1,3 @@
-export class ColorConstants {
-  static readonly COLOR_FULL: number = 255;
-  static readonly COLOR_WITHE: string = 'rgba(255, 255, 255, 1.00)';
-}
-
 /**
  * 歌单Item
  */
@@ -26,7 +21,7 @@ export class RecommendPlaylistItemConstants {
   /**
    * 字体颜色
    */
-  static readonly FONT_COLOR: string = ColorConstants.COLOR_WITHE;
+  static readonly FONT_COLOR: string = '#fff';
   /**
    * 最大行数
    */
@@ -43,15 +38,4 @@ export class RecommendPlaylistItemConstants {
    * 边距
    */
   static readonly MARGIN: number = 20;
-}
-
-export class MusicRecommendConstants {
-  /**
-   * 标题
-   */
-  static readonly TITLE: string = '音乐';
-  /**
-   * 推荐歌单
-   */
-  static readonly RECOMMEND_PLAYLIST: string = '推荐歌单>';
 }

@@ -3,12 +3,11 @@ import { LayoutConstants } from '../constants/LayoutConstants';
 
 @Preview
 @Component
-export struct BarHeader{
+export struct BarHeader {
+  @Prop title: Resource;
 
-  @Prop title: string;
-
-  build(){
-    Column(){
+  build() {
+    Column() {
       Text(this.title)
         .fontWeight(FontWeight.Bold)
         .fontSize(HeaderConstants.TITLE_FONT_SIZE)
@@ -21,5 +20,4 @@ export struct BarHeader{
     .height(HeaderConstants.HEADER_HEIGHT)
     .width(LayoutConstants.FULL_PERCENT)
   }
-
 }

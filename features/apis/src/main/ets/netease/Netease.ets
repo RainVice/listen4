@@ -1,11 +1,7 @@
 import http from '@ohos.net.http';
 import { NeteaseConstants } from '../constants/NeteaseConstants';
 import { Api, Options } from './Api';
-import { Personalized, PersonalizedResult } from './Bean';
-import { KVDBUtil } from '@listen4/common';
-
-
-const KVDBKey: string = 'neteaseKV';
+import { DataKeys, KVDBUtil } from '@listen4/common';
 
 export namespace Netease {
 
@@ -125,15 +121,15 @@ export namespace Netease {
      * @param local 是否读取本机缓存
      * @returns
      */
-    public static async personalized(local: boolean = true): Promise<PersonalizedResult[]> {
+    public static async personalized(local: boolean = true): Promise<object[]> {
 
-      const kvdb = AppStorage.Get<KVDBUtil>(KVDBKey)
+      const kvdb = AppStorage.Get<KVDBUtil>(DataKeys.NETEASE_KV)
       try {
         if (!local) {
           throw new Error('network');
         }
         let data = await kvdb.get('PlayList.personalized') as string;
-        return (JSON.parse(data) as Personalized).result;
+        return (JSON.parse(data))['result'];
       }
       catch (err) {
         // 没有本地缓存，请求
@@ -144,13 +140,43 @@ export namespace Netease {
           n: 1000
         }
         let result = await Api.send(http.RequestMethod.POST, url, data);
-        let res = result.result as Personalized;
+        let res = result.result;
         // 保存到本地
         await kvdb.put('PlayList.personalized', JSON.stringify(res));
-        return res.result;
+        return res['result'];
       }
     }
   }
 
-
+  /**
+   * 音乐相关接口
+   */
+  export class Music {
+    /**
+     * 获取最新音乐
+     * @param local 是否读取本地缓存
+     * @returns
+     */
+    public static async newMusic(local: boolean = true): Promise<object[]> {
+      const kvdb = AppStorage.Get<KVDBUtil>(DataKeys.NETEASE_KV)
+      try {
+        if (!local) {
+          throw new Error('network');
+        }
+        let data = await kvdb.get('Music.newMusic') as string;
+        return JSON.parse(data)['result'];
+      } catch (err) {
+        let url = 'https://music.163.com/api/personalized/newsong'
+        const data = {
+          type: 'recommend',
+          limit: 10,
+          areaId: 0,
+        }
+        let result = await Api.send(http.RequestMethod.POST, url, data);
+        let res = result.result;
+        await kvdb.put('Music.newMusic', JSON.stringify(res));
+        return res['result']
+      }
+    }
+  }
 }

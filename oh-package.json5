@@ -10,6 +10,5 @@
   "version": "1.0.0",
   "dynamicDependencies": {},
   "dependencies": {
-    "@ohos/axios": "^2.1.1"
   }
 }

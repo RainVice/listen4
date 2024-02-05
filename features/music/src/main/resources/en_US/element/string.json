@@ -3,6 +3,18 @@
     {
       "name": "page_show",
       "value": "page from package"
+    },
+    {
+      "name": "music_recommend_music",
+      "value": "music"
+    },
+    {
+      "name": "music_new_music",
+      "value": "New music"
+    },
+    {
+      "name": "music_recommend_playlist",
+      "value": "Recommended playlists"
     }
   ]
 }
