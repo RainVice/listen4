@@ -29,12 +29,12 @@ export class BreakpointConstants{
   /**
    * 中等设备宽度范围。
    */
-  static readonly RANGE_MD: string = '(520vp<=width<750vp)';
+  static readonly RANGE_MD: string = '(520vp<=width<840vp)';
 
   /**
    * 大设备宽度范围。
    */
-  static readonly RANGE_LG: string = '(750vp<=width)';
+  static readonly RANGE_LG: string = '(840vp<=width)';
 
 
 }

@@ -1,11 +1,12 @@
 {
+  "license": "Apache-2.0",
+  "devDependencies": {},
+  "author": "",
   "name": "@listen4/apis",
-  "version": "1.0.0",
   "description": "Please describe the basic information.",
   "main": "Index.ets",
-  "author": "",
-  "license": "Apache-2.0",
+  "version": "1.0.0",
   "dependencies": {
-    '@listen4/common': 'file:../../common'
+    "@listen4/common": "file:../../common"
   }
 }

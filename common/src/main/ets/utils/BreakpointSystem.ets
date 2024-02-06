@@ -1,7 +1,5 @@
-import { BreakpointConstants } from '../constants/BreakpointConstants'
+import { BreakpointConstants } from '../constants/BreakpointConstants';
 import mediaQuery from '@ohos.mediaquery';
-
-
 
 
 /**
@@ -38,19 +36,18 @@ declare interface BreakPointTypeOption<T> {
  * @template T - 元类型
  */
 export class BreakPointType<T> {
-
   /**
    * 分辨率选项
    * @property option - BreakPointTypeOption<T>
    */
-  options: BreakPointTypeOption<T>;
+  private options: BreakPointTypeOption<T>;
 
   /**
    * 构造函数
    * @constructor
    * @param {BreakPointTypeOption<T>} options - 分辨率选项
    */
-  constructor(options: BreakPointTypeOption<T>){
+  constructor(options: BreakPointTypeOption<T>) {
     this.options = options;
   }
 
@@ -59,15 +56,13 @@ export class BreakPointType<T> {
    * @method getValue
    * @returns {T} 当前分辨率的值
    */
-  getValue(){
-    return this.options[AppStorage.Get<string>(BreakpointConstants.CURRENT_BREAKPOINT)] as T;
+  getValue(currentBreakpoint: string) {
+    return this.options[currentBreakpoint] as T;
   }
-
 }
 
 // 响应屏幕尺寸断点变化的类
 export class BreakpointSystem {
-
   // 小屏幕监听器
   private static smListener?: mediaQuery.MediaQueryListener;
   // 中等屏幕监听器
@@ -79,7 +74,7 @@ export class BreakpointSystem {
   public static register() {
     // 注册小屏幕媒体查询监听器
     this.smListener = mediaQuery.matchMediaSync(BreakpointConstants.RANGE_SM);
-    this.smListener?.on('change',(mediaQueryResult: mediaQuery.MediaQueryResult) => {
+    this.smListener?.on('change', (mediaQueryResult: mediaQuery.MediaQueryResult) => {
       if (mediaQueryResult.matches) {
         // 当小屏幕时，设置当前断点为SM
         AppStorage.Set<string>(BreakpointConstants.CURRENT_BREAKPOINT, BreakpointConstants.SM);
@@ -87,7 +82,7 @@ export class BreakpointSystem {
     });
     // 注册中等屏幕媒体查询监听器
     this.mdListener = mediaQuery.matchMediaSync(BreakpointConstants.RANGE_MD);
-    this.mdListener?.on('change',(mediaQueryResult: mediaQuery.MediaQueryResult) => {
+    this.mdListener?.on('change', (mediaQueryResult: mediaQuery.MediaQueryResult) => {
       if (mediaQueryResult.matches) {
         // 当中等屏幕时，设置当前断点为MD
         AppStorage.Set<string>(BreakpointConstants.CURRENT_BREAKPOINT, BreakpointConstants.MD);
@@ -95,7 +90,7 @@ export class BreakpointSystem {
     });
     // 注册大屏幕媒体查询监听器
     this.lgListener = mediaQuery.matchMediaSync(BreakpointConstants.RANGE_LG);
-    this.lgListener?.on('change',(mediaQueryResult: mediaQuery.MediaQueryResult) => {
+    this.lgListener?.on('change', (mediaQueryResult: mediaQuery.MediaQueryResult) => {
       if (mediaQueryResult.matches) {
         // 当大屏幕时，设置当前断点为LG
         AppStorage.Set<string>(BreakpointConstants.CURRENT_BREAKPOINT, BreakpointConstants.LG);

@@ -21,7 +21,7 @@ struct Index {
   build() {
     Row() {
       Tabs({
-        barPosition: this.currentBreakpoint === BreakpointConstants.LG ? BarPosition.Start : BarPosition.End,
+        barPosition: this.currentBreakpoint !== BreakpointConstants.SM ? BarPosition.Start : BarPosition.End,
         index: this.currentPageIndex
       }) {
         TabContent() {
@@ -29,14 +29,15 @@ struct Index {
         }
         .tabBar(this.BottomNavigation(bottomInfo[IndexConstants.HOME_INDEX]))
 
-        TabContent()
-          .tabBar(this.BottomNavigation(bottomInfo[IndexConstants.LOVE_INDEX]))
+        TabContent() {
+        }
+        .tabBar(this.BottomNavigation(bottomInfo[IndexConstants.LOVE_INDEX]))
 
       }
       .onChange((index: number) => {
         this.currentPageIndex = index;
       })
-      .vertical(this.currentBreakpoint === BreakpointConstants.LG)
+      .vertical(this.currentBreakpoint !== BreakpointConstants.SM)
     }
     .margin({
       top: this.statusBarHeight

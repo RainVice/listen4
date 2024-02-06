@@ -48,8 +48,8 @@ export class Api {
    * @returns 返回Promise对象，包含请求结果
    */
   public static async send(method: http.RequestMethod, url: string, data: object = {}, options: Options = {
+    crypto: 'weapi'
   }): Promise<http.HttpResponse> {
-    if (!options.crypto) options.crypto = 'weapi'
     if (!url.includes('https://music.163.com/')) {
       url = ('https://music.163.com/' + url).replace('m//', 'm/');
     }

@@ -146,12 +146,34 @@ export namespace Netease {
         return res['result'];
       }
     }
+
+    /**
+     * 获取歌单详情
+     * @param id 歌单id
+     * @returns
+     */
+    public static async detail(id: number) {
+      let url = 'api/v6/playlist/detail'
+      let data = {
+        id: id,
+        n: 100000,
+        s: 8,
+      }
+      let option: Options = {
+        crypto: 'api',
+      }
+      let result = await Api.send(http.RequestMethod.POST, url, data, option);
+      let res = result.result as string;
+      return JSON.parse(res)['playlist'];
+    }
   }
 
   /**
    * 音乐相关接口
    */
   export class Music {
+    public static async
+
     /**
      * 获取最新音乐
      * @param local 是否读取本地缓存
@@ -166,7 +188,7 @@ export namespace Netease {
         let data = await kvdb.get('Music.newMusic') as string;
         return JSON.parse(data)['result'];
       } catch (err) {
-        let url = 'https://music.163.com/api/personalized/newsong'
+        let url = 'api/personalized/newsong'
         const data = {
           type: 'recommend',
           limit: 10,
@@ -177,6 +199,21 @@ export namespace Netease {
         await kvdb.put('Music.newMusic', JSON.stringify(res));
         return res['result']
       }
+    }
+
+
+    /**
+     * 获取音乐详情
+     * @param ids 歌曲id
+     * @returns
+     */
+    public static async musicDetail(ids: number[]): Promise<object> {
+      const data = {
+        c: '[' + ids.map((id) => '{"id":' + id + '}').join(',') + ']',
+      }
+      const url = 'weapi/v3/song/detail';
+      let res = await Api.send(http.RequestMethod.POST, url, data, { crypto: 'weapi' })
+      return JSON.parse(res.result as string);
     }
   }
 }

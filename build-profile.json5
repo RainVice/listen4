@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "C:\\Users\\Rainvice\\.ohos\\config\\auto_debug_Listen4_com.rainvice.listen4_2850086000446513801.cer",
-          "storePassword": "0000001B82704325B3EC90B602A7B46D0FE3E50BA398B8D0FABC469BFC5BF117DA3677D0C083C1607E8B48",
+          "storePassword": "0000001B93F199522E35B47B882AF8CC30D7E72C36CDB603DD652AAB8609B3BAD1637F01D245C25B0C665D",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B39129F19C3D69F8DA69C0258F95A209CCC0F785AB81BCD2A32569386FE69A8A487FE09C699DC61",
+          "keyPassword": "0000001BD31AAF42FACE2BCA7814EB697761A6264A77F128F897750DCFF6E8605EEEE92D3AE6BE63B37914",
           "profile": "C:\\Users\\Rainvice\\.ohos\\config\\auto_debug_Listen4_com.rainvice.listen4_2850086000446513801.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\Rainvice\\.ohos\\config\\auto_debug_Listen4_com.rainvice.listen4_2850086000446513801.p12"

@@ -1,6 +1,7 @@
-import { BarHeader, LayoutConstants, ListAdapter } from '@listen4/common';
+import { FirstLevelTitleBar, LayoutConstants, ListAdapter } from '@listen4/common';
 import { Netease } from '@listen4/apis';
 import { CoverItem } from './Items';
+import router from '@ohos.router';
 
 
 @Preview
@@ -23,7 +24,7 @@ export struct MusicRecommend {
 
   build() {
     Column() {
-      BarHeader({ title: $r('app.string.music_recommend_music') })
+      FirstLevelTitleBar({ title: $r('app.string.music_recommend_music') })
       Scroll() {
         Column({ space: 20 }) {
           // 推荐歌单
@@ -32,6 +33,12 @@ export struct MusicRecommend {
             this.playListAdapter,
             (item: object) => item['picUrl'],
             (item: object) => item['name'],
+            (item: object) => {
+              router.pushUrl({
+                url: 'pages/PlaylistDetail',
+                params: item
+              })
+            }
           )
 
 
@@ -49,14 +56,14 @@ export struct MusicRecommend {
         .width(LayoutConstants.FULL_PERCENT)
       }
       .padding({ left: 20, right: 20 })
-
+      .layoutWeight(1)
     }
     .height(LayoutConstants.FULL_PERCENT)
     .width(LayoutConstants.FULL_PERCENT)
   }
 
   @Builder
-  Card<T>(title: Resource, adapter: IDataSource, url: (item: T) => string, name: (item: T) => string, click: (event?: ClickEvent) => void = () => {
+  Card<T>(title: Resource, adapter: IDataSource, url: (item: T) => string, name: (item: T) => string, click: (item?: T) => void = (item: T) => {
   }) {
     Text(title)
       .fontSize(20)
@@ -65,12 +72,12 @@ export struct MusicRecommend {
       LazyForEach(adapter, (item: T) => {
         ListItem() {
           CoverItem({ url: url(item), text: name(item) })
-            .onClick(click)
+            .onClick(() => click(item))
         }
       }, (item: T) => JSON.stringify(item))
     }
     .width(LayoutConstants.FULL_PERCENT)
-    .height(250)
+    // .height(250)
     .listDirection(Axis.Horizontal)
 
   }

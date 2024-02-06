@@ -10,6 +10,5 @@
     "@listen4/common": "file:../common",
     "@listen4/music": "file:../features/music",
     "@listen4/apis": "file:../features/apis"
-
   }
 }

@@ -9,11 +9,19 @@ export class RecommendPlaylistItemConstants {
   /**
    * 高度
    */
-  static readonly HEIGHT: number = 250;
+  static readonly HEIGHT: number = 350;
+  /**
+   * image宽度
+   */
+  static readonly IMAGE_WIDTH: number = 250;
+  /**
+   * image高度
+   */
+  static readonly IMAGE_HEIGHT: number = 250;
   /**
    * 模糊度
    */
-  static readonly BLUR: number = 20;
+  static readonly BLUR: number = 100;
   /**
    * 圆角半径
    */
@@ -25,17 +33,17 @@ export class RecommendPlaylistItemConstants {
   /**
    * 最大行数
    */
-  static readonly MAX_LINES: number = 3;
+  static readonly MAX_LINES: number = 2;
   /**
    * 最大字体大小
    */
-  static readonly MAX_FONT_SIZE: number = 30;
+  static readonly MAX_FONT_SIZE: number = 20;
   /**
    * 最小字体大小
    */
-  static readonly MIN_FONT_SIZE: number = 25;
+  static readonly MIN_FONT_SIZE: number = 18;
   /**
    * 边距
    */
-  static readonly MARGIN: number = 20;
+  static readonly PADDING: number = 20;
 }

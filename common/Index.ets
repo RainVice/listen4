@@ -6,7 +6,7 @@ export * from './src/main/ets/utils/Logger';
 
 export * from './src/main/ets/constants/LayoutConstants'
 
-export * from './src/main/ets/components/BarHeader'
+export * from './src/main/ets/components/TitleBar'
 
 export * from './src/main/ets/utils/PreferencesUtil'
 

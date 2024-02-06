@@ -1,1 +1,2 @@
-export {MusicRecommend} from './src/main/ets/components/MusicRecommend'
+export * from './src/main/ets/components/MusicRecommend'
+export * from './src/main/ets/view/PlaylistDetail'
