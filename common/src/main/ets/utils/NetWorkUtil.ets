@@ -16,15 +16,9 @@ export class NetWorkUtil {
    * @param url 图片url
    * @returns 是否从本地读取
    */
-  static async getPic(url: string, local: boolean = true): Promise<PicModel> {
-
+  static async getPic(url: string, x: number = 512,y: number = 512): Promise<PicModel> {
     if (!url.includes('param')) {
       url += '?param=512y512'
-    }
-
-    if (local && AppStorage.Has(url)) {
-      let model = AppStorage.Get<PicModel>(url);
-      return model;
     }
     // 网络请求图片，获取主色调，设置字体颜色
     let res = await http.createHttp().request(url, { expectDataType: http.HttpDataType.ARRAY_BUFFER })

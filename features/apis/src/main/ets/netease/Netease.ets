@@ -98,7 +98,7 @@ export namespace Netease {
       cookies.forEach((coo) => {
         cookie[coo[5] || 'null'] = coo[6] || 'null';
       })
-      AppStorage.Set<object>(NeteaseConstants.NETEASE_COOKIE, cookie);
+      AppStorage.SetOrCreate<object>(NeteaseConstants.NETEASE_COOKIE, cookie);
     }
 
     /**
@@ -107,7 +107,7 @@ export namespace Netease {
      * @returns cookie数组
      */
     private static parseCookies(cookies: string) {
-      return cookies.split('\n').map((line) => line.split(' '));
+      return cookies.split('\n').map((line) => line.trim().split('\t'));
     }
   }
 
@@ -163,8 +163,12 @@ export namespace Netease {
         crypto: 'api',
       }
       let result = await Api.send(http.RequestMethod.POST, url, data, option);
-      let res = result.result as string;
-      return JSON.parse(res)['playlist'];
+      if (typeof result.result === 'string') {
+        let res = result.result as string;
+        return JSON.parse(res)['playlist'];
+      } else {
+        return result.result['playlist'];
+      }
     }
   }
 
@@ -213,7 +217,11 @@ export namespace Netease {
       }
       const url = 'weapi/v3/song/detail';
       let res = await Api.send(http.RequestMethod.POST, url, data, { crypto: 'weapi' })
-      return JSON.parse(res.result as string);
+      if (typeof res.result === 'string') {
+        return JSON.parse(res.result as string);
+      } else {
+        return res.result;
+      }
     }
   }
 }

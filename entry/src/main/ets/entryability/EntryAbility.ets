@@ -22,7 +22,7 @@ export default class EntryAbility extends UIAbility {
     this.listen4Preferences.has(DataConstants.PREFERENCES_COOKIE_KEY).then(async (has) => {
       if (has) {
         let cookie: object = JSON.parse((await this.listen4Preferences.get(DataConstants.PREFERENCES_COOKIE_KEY, "{}")) as string)
-        AppStorage.Set<object>(NeteaseConstants.NETEASE_COOKIE, cookie);
+        AppStorage.SetOrCreate<object>(NeteaseConstants.NETEASE_COOKIE, cookie);
       } else {
         await Netease.User.anonimous();
         this.listen4Preferences.put(

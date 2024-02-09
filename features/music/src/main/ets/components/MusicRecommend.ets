@@ -1,4 +1,4 @@
-import { FirstLevelTitleBar, LayoutConstants, ListAdapter } from '@listen4/common';
+import { FirstLevelTitleBar, LayoutConstants, ListAdapter, PicModel } from '@listen4/common';
 import { Netease } from '@listen4/apis';
 import { CoverItem } from './Items';
 import router from '@ohos.router';
@@ -9,11 +9,16 @@ import router from '@ohos.router';
 export struct MusicRecommend {
   @State playList: object[] = [];
   @State newMusic: object[] = [];
+  @State selectUrl: string = '';
   /**
    * 歌单列表适配器
    */
   playListAdapter: ListAdapter<object> = new ListAdapter<object>(this.playList);
   newmusicAdapter: ListAdapter<object> = new ListAdapter<object>(this.newMusic);
+  /**
+   * 图片列表数据
+   */
+  imageDatas: Map<string, PicModel> = new Map<string, PicModel>();
 
   async aboutToAppear() {
     this.playList = (await Netease.PlayList.personalized())
@@ -31,8 +36,6 @@ export struct MusicRecommend {
           this.Card<object>(
             $r('app.string.music_recommend_playlist'),
             this.playListAdapter,
-            (item: object) => item['picUrl'],
-            (item: object) => item['name'],
             (item: object) => {
               router.pushUrl({
                 url: 'pages/PlaylistDetail',
@@ -46,8 +49,6 @@ export struct MusicRecommend {
           this.Card<object>(
             $r('app.string.music_new_music'),
             this.newmusicAdapter,
-            (item: object) => item['picUrl'],
-            (item: object) => item['name'],
           )
 
 
@@ -63,7 +64,7 @@ export struct MusicRecommend {
   }
 
   @Builder
-  Card<T>(title: Resource, adapter: IDataSource, url: (item: T) => string, name: (item: T) => string, click: (item?: T) => void = (item: T) => {
+  Card<T>(title: Resource, adapter: IDataSource, click: (item?: T) => void = (item: T) => {
   }) {
     Text(title)
       .fontSize(20)
@@ -71,8 +72,15 @@ export struct MusicRecommend {
     List({ space: 10 }) {
       LazyForEach(adapter, (item: T) => {
         ListItem() {
-          CoverItem({ url: url(item), text: name(item) })
-            .onClick(() => click(item))
+          CoverItem({
+            selectUrl: this.selectUrl,
+            url: item['picUrl'],
+            text: item['name']
+          })
+            .onClick(() => {
+              this.selectUrl = item['picUrl']
+              click(item)
+            })
         }
       }, (item: T) => JSON.stringify(item))
     }

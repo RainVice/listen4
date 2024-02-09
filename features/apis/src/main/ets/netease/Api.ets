@@ -196,19 +196,28 @@ export class Api {
    */
   private static async setCookie(headers: object, options: Options): Promise<object> {
     let cookie = this.getCookie();
-    cookie = {
+
+    let newCookie = {
       ...options.cookie,
       ...cookie,
       __remember_me: true,
       NMTID: (await crypto.randomBytes(16)).toString('hex'),
       _ntes_nuid: (await crypto.randomBytes(16)).toString('hex'),
     }
-    if (!cookie['MUSIC_U'] && !cookie['MUSIC_A']) {
-      cookie['MUSIC_A'] = config.anonymous_token;
+
+    // cookie = {
+    //   ...options.cookie,
+    //   ...cookie,
+    //   __remember_me: true,
+    //   NMTID: (await crypto.randomBytes(16)).toString('hex'),
+    //   _ntes_nuid: (await crypto.randomBytes(16)).toString('hex'),
+    // }
+    if (!newCookie['MUSIC_U'] && !newCookie['MUSIC_A']) {
+      newCookie['MUSIC_A'] = config.anonymous_token;
     }
 
-    headers['Cookie'] = Object.keys(cookie)
-      .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(cookie[key]))
+    headers['Cookie'] = Object.keys(newCookie)
+      .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(newCookie[key]))
       .join('; ');
     return headers;
   }

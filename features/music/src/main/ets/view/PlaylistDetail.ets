@@ -1,12 +1,13 @@
-import { Netease } from '@listen4/apis';
-import { LayoutConstants, ListAdapter } from '@listen4/common';
+import { Netease } from '@listen4/apis/src/main/ets/netease/Netease';
+import { BreakpointConstants, LayoutConstants, ListAdapter, Logger, NetWorkUtil, PicModel } from '@listen4/common';
+import { MusicListItem } from '../components/Items';
 
 @Component
 export struct PlayListCover {
   /**
-   * 歌单封面
+   * 歌单封面 url
    */
-  picUrl: string;
+  url: string;
   /**
    * 歌单名字
    */
@@ -15,17 +16,30 @@ export struct PlayListCover {
    * 歌单描述
    */
   @Prop description: string;
+  @State model: PicModel = {};
+
+  async aboutToAppear() {
+    if (AppStorage.Has(this.url)) {
+      this.model = AppStorage.Get(this.url)
+    } else {
+      this.model = await NetWorkUtil.getPic(this.url)
+      AppStorage.Set(this.url, this.model)
+    }
+  }
 
   build() {
 
     Column({ space: 10 }) {
-      Image(this.picUrl)
+      Image(this.model.image)
         .borderRadius(20)
         .width(200)
         .height(200)
+        .colorBlend(this.model.mainColor)
 
       Text(this.name)
-        .fontSize(30)
+        .fontSize(20)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .maxLines(1)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center)
       Text(this.description)
@@ -37,29 +51,151 @@ export struct PlayListCover {
   }
 }
 
-@Preview
 @Component
 export struct PlayListMusics {
+  /**
+   * 断点
+   */
+  @StorageProp('currentBreakpoint') @Watch('changeScroll') currentBreakpoint: string = BreakpointConstants.SM;
+  /**
+   * 歌曲id
+   */
   @Prop musicIds: number[];
-  @State musicList: object = {};
-  musicListAdapter: ListAdapter<object> = new ListAdapter<object>();
+  /**
+   * 0代表滚动到Scroll顶部，1代表中间值，2代表滚动到Scroll底部。
+   */
+  @Link scrollPosition: number;
+  /**
+   * 0代表滚动到List顶部，1代表中间值，2代表滚动到List底部。
+   */
+  @Link listPosition: number;
+  musicInfoList: object[] = [];
+  /**
+   * 滚动组件控制器
+   */
+  scroller: Scroller;
+  /**
+   * 列表适配器
+   */
+  adapter: ListAdapter<object>;
+  mapMusicInfo: Map<number, object> = new Map<number, object>();
+  imageMap: Map<string, PicModel> = new Map<string, PicModel>();
+  /**
+   * 起始位置
+   */
+  startIndex = 0;
+  /**
+   * 结束位置
+   */
+  endIndex = 30;
+  /**
+   * 是否加载
+   */
+  @State isLoding: boolean = true;
 
-  async aboutToAppear() {
-    this.musicList = await Netease.Music.musicDetail(this.musicIds);
-    this.musicListAdapter.notifyDataReload(this.musicList['songs']);
+  aboutToAppear() {
+    this.adapter = new ListAdapter<object>(this.musicInfoList)
+    this.getMusicList();
   }
 
   build() {
-
-    List() {
-      LazyForEach(this.musicListAdapter, (item) => {
+    Column() {
+      List() {
+        LazyForEach(this.adapter, (item, index) => {
+          ListItem() {
+            MusicListItem({
+              index: index,
+              songInfo: item,
+              imageFun: async (url) => {
+                if (this.imageMap.has(url)) {
+                  let model = this.imageMap.get(url);
+                  return model;
+                }
+                let model = await NetWorkUtil.getPic(url, 100, 100)
+                this.imageMap.set(url, model);
+                return model;
+              }
+            })
+          }
+        }, (item) => JSON.stringify(item))
         ListItem() {
-          Text(item['name'])
+          LoadingProgress()
         }
-      }, (item) => JSON.stringify(item))
-    }
-    .width(LayoutConstants.FULL_PERCENT)
-    .height(LayoutConstants.FULL_PERCENT)
+        .visibility(this.isLoding ? Visibility.Visible : Visibility.None)
+        .height(56)
+        .width(LayoutConstants.FULL_PERCENT)
 
+        ListItem() {
+          Text('没有更多了')
+        }
+        .visibility(!this.isLoding ? Visibility.Visible : Visibility.None)
+        .height(56)
+        .width(LayoutConstants.FULL_PERCENT)
+      }
+      .onReachStart(() => {
+        this.listPosition = 0;
+      })
+      .onReachEnd(() => {
+        this.listPosition = 2;
+        this.getMusicList();
+      })
+      .onScrollFrameBegin((offset: number, state: ScrollState) => {
+        // 小尺寸屏幕滑动逻辑冲突处理
+        if (this.currentBreakpoint === BreakpointConstants.SM) {
+          if (this.listPosition === 0 && this.scrollPosition === 0 && offset >= 0) {
+            this.scroller.scrollBy(0, offset)
+            this.scrollPosition = 1;
+            return { offsetRemain: 0 }
+          }
+          else if (this.listPosition === 0 && this.scrollPosition === 1 && offset >= 0) {
+            this.scroller.scrollBy(0, offset)
+            return { offsetRemain: 0 }
+          }
+          if (this.listPosition === 1 && this.scrollPosition === 0 && offset >= 0) {
+            this.scroller.scrollBy(0, offset)
+            this.scrollPosition = 1;
+            return { offsetRemain: 0 }
+          } else if (this.listPosition === 1 && this.scrollPosition === 1 && offset >= 0) {
+            this.scroller.scrollBy(0, offset)
+            return { offsetRemain: 0 }
+          }
+
+
+          if (offset <= 0 && this.listPosition === 0) {
+            this.scroller.scrollBy(0, offset)
+            this.scrollPosition = 1;
+            return { offsetRemain: 0 }
+          }
+        }
+
+        this.listPosition = 1;
+        return { offsetRemain: offset };
+      })
+      .edgeEffect(EdgeEffect.None)
+      .height('100%')
+      .width('100%')
+    }
+  }
+
+  changeScroll() {
+    this.scrollPosition = 0;
+  }
+
+  /**
+   * 获取音乐列表
+   */
+  async getMusicList() {
+    if (this.startIndex >= this.musicIds.length) {
+      this.isLoding = false;
+      return
+    }
+    let musics = await Netease.Music.musicDetail(this.musicIds.slice(this.startIndex, this.endIndex))
+    this.startIndex = this.endIndex;
+    this.endIndex += 30;
+    if (this.endIndex > this.musicIds.length) {
+      this.endIndex = this.musicIds.length;
+    }
+    this.musicInfoList = this.musicInfoList.concat(musics['songs'])
+    this.adapter.notifyDataReload(this.musicInfoList)
   }
 }

@@ -46,11 +46,13 @@ export struct SecondLevelTitleBar {
       Text(this.title)
         .maxFontSize(new BreakPointType<number>({ sm: 20, md: 15, lg: 20 }).getValue(this.currentBreakpoint))
         .minFontSize(new BreakPointType<number>({ sm: 15, md: 12, lg: 15 }).getValue(this.currentBreakpoint))
-        .maxLines(2)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
         .fontColor(Color.Black)
         .fontWeight(FontWeight.Bold)
+        .layoutWeight(1)
 
-      Blank()
+      // Blank()
 
       Button({ type: ButtonType.Circle, stateEffect: true }) {
         Image($r('app.media.ic_public_more'))
@@ -61,7 +63,7 @@ export struct SecondLevelTitleBar {
     }
     .backgroundColor(Color.White)
     .padding({ left: 20, right: 20 })
-    .height(new BreakPointType<number>({ sm: 60, md: 40, lg: 60 }).getValue(this.currentBreakpoint))
+    .height(new BreakPointType<number>({ sm: 56, md: 45, lg: 56 }).getValue(this.currentBreakpoint))
     .width(LayoutConstants.FULL_PERCENT)
   }
 }
