@@ -1,6 +1,13 @@
 import { Netease } from '@listen4/apis/src/main/ets/netease/Netease';
-import { BreakpointConstants, LayoutConstants, ListAdapter, Logger, NetWorkUtil, PicModel } from '@listen4/common';
-import { MusicListItem } from '../components/Items';
+import {
+  BreakpointConstants,
+  BreakPointType,
+  LayoutConstants,
+  ListAdapter,
+  NetWorkUtil,
+  PicModel
+} from '@listen4/common';
+import { MusicListItem } from './Items';
 
 @Component
 export struct PlayListCover {
@@ -17,6 +24,7 @@ export struct PlayListCover {
    */
   @Prop description: string;
   @State model: PicModel = {};
+  @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointConstants.SM;
 
   async aboutToAppear() {
     if (AppStorage.Has(this.url)) {
@@ -29,24 +37,82 @@ export struct PlayListCover {
 
   build() {
 
-    Column({ space: 10 }) {
-      Image(this.model.image)
-        .borderRadius(20)
-        .width(200)
-        .height(200)
-        .colorBlend(this.model.mainColor)
+    Scroll() {
 
-      Text(this.name)
-        .fontSize(20)
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
-        .maxLines(1)
-        .fontWeight(FontWeight.Bold)
-        .textAlign(TextAlign.Center)
-      Text(this.description)
-        .maxLines(1)
-        .textAlign(TextAlign.Center)
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
-    }.padding({ left: 20, right: 20 })
+      GridRow({
+        columns: { sm: 12, md: 12, lg: 12 },
+        gutter: 5
+      }) {
+        GridCol({
+          span: { sm: 4, md: 12, lg: 12 }
+        }) {
+          Image(this.model.image)
+            .borderRadius(20)
+            .width(new BreakPointType<number>({ sm: 80, md: 200, lg: 200 }).getValue(this.currentBreakpoint))
+            .height(new BreakPointType<number>({ sm: 80, md: 200, lg: 200 }).getValue(this.currentBreakpoint))
+          // .colorBlend(this.model.mainColor)
+        }
+
+        GridCol({
+          span: { sm: 8, md: 12, lg: 12 }
+        }) {
+          Column() {
+            Text(this.name)
+              .fontSize(19)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .maxLines(new BreakPointType<number>({
+                sm: 2,
+                md: Infinity,
+                lg: Infinity
+              }).getValue(this.currentBreakpoint))
+              .fontWeight(FontWeight.Bold)
+              .textAlign(this.currentBreakpoint === BreakpointConstants.SM ? TextAlign.Start : TextAlign.Center)
+              .width(LayoutConstants.FULL_PERCENT)
+            Text(this.description)
+              .maxLines(new BreakPointType<number>({
+                sm: 2,
+                md: Infinity,
+                lg: Infinity
+              }).getValue(this.currentBreakpoint))
+              .textAlign(this.currentBreakpoint === BreakpointConstants.SM ? TextAlign.Start : TextAlign.Center)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .width(LayoutConstants.FULL_PERCENT)
+          }
+          // .padding(10)
+          .justifyContent(FlexAlign.Center)
+          .width(LayoutConstants.FULL_PERCENT)
+          .height(new BreakPointType<number>({ sm: 80, md: 200, lg: 200 }).getValue(this.currentBreakpoint))
+        }
+      }
+    }
+    .scrollBar(BarState.Off)
+    .scrollable(
+      this.currentBreakpoint === BreakpointConstants.SM ?
+      ScrollDirection.None :
+      ScrollDirection.Vertical
+    )
+    // .height(LayoutConstants.FULL_PERCENT)
+    .width(LayoutConstants.FULL_PERCENT)
+    .padding(10)
+
+    // Column({ space: 10 }) {
+    //   Image(this.model.image)
+    //     .borderRadius(20)
+    //     .width(200)
+    //     .height(200)
+    //     .colorBlend(this.model.mainColor)
+    //
+    //   Text(this.name)
+    //     .fontSize(20)
+    //     .textOverflow({ overflow: TextOverflow.Ellipsis })
+    //     .maxLines(1)
+    //     .fontWeight(FontWeight.Bold)
+    //     .textAlign(TextAlign.Center)
+    //   Text(this.description)
+    //     .maxLines(1)
+    //     .textAlign(TextAlign.Center)
+    //     .textOverflow({ overflow: TextOverflow.Ellipsis })
+    // }.padding({ left: 20, right: 20 })
 
   }
 }
@@ -132,6 +198,12 @@ export struct PlayListMusics {
         .height(56)
         .width(LayoutConstants.FULL_PERCENT)
       }
+      .divider({
+        strokeWidth: 2,
+        color: '#1a000000',
+        startMargin: 30,
+        endMargin: 30
+      })
       .onReachStart(() => {
         this.listPosition = 0;
       })

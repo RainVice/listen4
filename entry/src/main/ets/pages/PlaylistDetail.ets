@@ -85,6 +85,7 @@ struct PlaylistDetail {
           }
         }
       }
+      .scrollBar(BarState.Off)
       // .edgeEffect(EdgeEffect.Spring)
       .onScrollEdge((side) => {
         if (side === Edge.Top) {
