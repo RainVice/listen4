@@ -128,8 +128,8 @@ export namespace Netease {
         if (!local) {
           throw new Error('network');
         }
-        let data = await kvdb.get('PlayList.personalized') as string;
-        return (JSON.parse(data))['result'];
+        let json = await kvdb.get('PlayList.personalized') as string;
+        return (JSON.parse(json))['result'];
       }
       catch (err) {
         // 没有本地缓存，请求
@@ -164,8 +164,8 @@ export namespace Netease {
       }
       let result = await Api.send(http.RequestMethod.POST, url, data, option);
       if (typeof result.result === 'string') {
-        let res = result.result as string;
-        return JSON.parse(res)['playlist'];
+        let json = result.result;
+        return JSON.parse(json)['playlist'];
       } else {
         return result.result['playlist'];
       }
@@ -189,8 +189,8 @@ export namespace Netease {
         if (!local) {
           throw new Error('network');
         }
-        let data = await kvdb.get('Music.newMusic') as string;
-        return JSON.parse(data)['result'];
+        let json = await kvdb.get('Music.newMusic') as string;
+        return JSON.parse(json)['result'];
       } catch (err) {
         let url = 'api/personalized/newsong'
         const data = {
@@ -214,11 +214,14 @@ export namespace Netease {
     public static async musicDetail(ids: number[]): Promise<object> {
       const data = {
         c: '[' + ids.map((id) => '{"id":' + id + '}').join(',') + ']',
+        ids: '[' + ids.map((id) => id).join(',') + ']'
       }
       const url = 'weapi/v3/song/detail';
       let res = await Api.send(http.RequestMethod.POST, url, data, { crypto: 'weapi' })
       if (typeof res.result === 'string') {
-        return JSON.parse(res.result as string);
+        let json = res.result;
+        console.log(`json:${json}`)
+        return JSON.parse(json);
       } else {
         return res.result;
       }

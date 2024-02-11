@@ -118,8 +118,6 @@ export class Api {
 
     // todo 添加代理功能
     // ...
-
-
     return http.createHttp().request(url, config)
   }
 
