@@ -226,5 +226,24 @@ export namespace Netease {
         return res.result;
       }
     }
+
+    public static async musicDetail1(ids: number[]): Promise<object> {
+      const data = {
+        c: '[' + ids.map((id) => '{"id":' + id + '}').join(',') + ']',
+        // ids: '[' + ids.map((id) => id).join(',') + ']'
+      }
+      const url = 'weapi/v3/song/detail';
+      return Api.send(http.RequestMethod.POST, url, data, { crypto: 'weapi' }).then(res => {
+        if (typeof res.result === 'string') {
+          let json = res.result;
+          console.log(`json:${json}`)
+          return JSON.parse(json);
+        } else {
+          return res.result;
+        }
+      }).catch(err => {
+        return
+      })
+    }
   }
 }

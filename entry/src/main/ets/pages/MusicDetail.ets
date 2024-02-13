@@ -1,17 +1,61 @@
+import { BreakpointConstants, SecondLevelTitleBar } from '@listen4/common';
+import { HotReviews, MusicCover } from '@listen4/music';
+
 @Entry
 @Component
 struct MusicDetail {
-  @State message: string = 'Hello World'
+  /**
+   * 断点
+   */
+  @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointConstants.SM;
 
   build() {
-    Row() {
-      Column() {
-        Text(this.message)
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
+
+    Column() {
+
+      if (this.currentBreakpoint === BreakpointConstants.SM) {
+        SecondLevelTitleBar()
       }
-      .width('100%')
+      GridRow({
+        columns: { sm: 4, md: 8, lg: 12 },
+        gutter: 10
+      }) {
+
+
+        GridCol({
+          span: { sm: 4, md: 3, lg: 4 }
+        }) {
+          Column() {
+            if (this.currentBreakpoint !== BreakpointConstants.SM) {
+              SecondLevelTitleBar()
+            }
+            MusicCover()
+          }
+        }
+
+        GridCol({
+          span: { sm: 4, md: 5, lg: 8 }
+        }) {
+          Column() {
+            HotReviews()
+          }
+        }
+
+      }
     }
-    .height('100%')
+
+
+    // Column({ space: 20 }) {
+    //
+    //   SecondLevelTitleBar()
+    //
+    //   MusicCover()
+    //
+    //   HotReviews()
+    //
+    //
+    // }
+    // .justifyContent(FlexAlign.Center)
+
   }
 }

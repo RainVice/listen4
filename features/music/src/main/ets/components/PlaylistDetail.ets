@@ -1,3 +1,7 @@
+/**
+ * 音乐列表详情组件
+ */
+
 import { Netease } from '@listen4/apis/src/main/ets/netease/Netease';
 import {
   BreakpointConstants,
@@ -95,25 +99,6 @@ export struct PlayListCover {
     .width(LayoutConstants.FULL_PERCENT)
     .padding(10)
 
-    // Column({ space: 10 }) {
-    //   Image(this.model.image)
-    //     .borderRadius(20)
-    //     .width(200)
-    //     .height(200)
-    //     .colorBlend(this.model.mainColor)
-    //
-    //   Text(this.name)
-    //     .fontSize(20)
-    //     .textOverflow({ overflow: TextOverflow.Ellipsis })
-    //     .maxLines(1)
-    //     .fontWeight(FontWeight.Bold)
-    //     .textAlign(TextAlign.Center)
-    //   Text(this.description)
-    //     .maxLines(1)
-    //     .textAlign(TextAlign.Center)
-    //     .textOverflow({ overflow: TextOverflow.Ellipsis })
-    // }.padding({ left: 20, right: 20 })
-
   }
 }
 
@@ -145,7 +130,6 @@ export struct PlayListMusics {
    */
   adapter: ListAdapter<object>;
   mapMusicInfo: Map<number, object> = new Map<number, object>();
-  imageMap: Map<string, PicModel> = new Map<string, PicModel>();
   /**
    * 起始位置
    */
@@ -161,7 +145,8 @@ export struct PlayListMusics {
 
   aboutToAppear() {
     this.adapter = new ListAdapter<object>(this.musicInfoList)
-    this.getMusicList();
+    this.endIndex = this.musicIds.length > 100 ? 100 : this.musicIds.length
+    // this.getMusicList();
   }
 
   build() {
@@ -171,32 +156,22 @@ export struct PlayListMusics {
           ListItem() {
             MusicListItem({
               index: index,
-              songInfo: item,
-              imageFun: async (url) => {
-                if (this.imageMap.has(url)) {
-                  let model = this.imageMap.get(url);
-                  return model;
-                }
-                let model = await NetWorkUtil.getPic(url, 100, 100)
-                this.imageMap.set(url, model);
-                return model;
-              }
+              songInfo: item
             })
           }
         }, (item) => JSON.stringify(item))
+
+
         ListItem() {
-          LoadingProgress()
+          if (this.isLoding) {
+            LoadingProgress()
+          } else {
+            Text('没有更多了')
+          }
         }
-        .visibility(this.isLoding ? Visibility.Visible : Visibility.None)
         .height(56)
         .width(LayoutConstants.FULL_PERCENT)
 
-        ListItem() {
-          Text('没有更多了')
-        }
-        .visibility(!this.isLoding ? Visibility.Visible : Visibility.None)
-        .height(56)
-        .width(LayoutConstants.FULL_PERCENT)
       }
       .divider({
         strokeWidth: 2,
@@ -256,18 +231,20 @@ export struct PlayListMusics {
   /**
    * 获取音乐列表
    */
-  async getMusicList() {
+  getMusicList() {
     if (this.startIndex >= this.musicIds.length) {
       this.isLoding = false;
       return
     }
-    let musics = await Netease.Music.musicDetail(this.musicIds.slice(this.startIndex, this.endIndex))
-    this.startIndex = this.endIndex;
-    this.endIndex += 30;
-    if (this.endIndex > this.musicIds.length) {
-      this.endIndex = this.musicIds.length;
-    }
-    this.musicInfoList = this.musicInfoList.concat(musics['songs'])
-    this.adapter.notifyDataReload(this.musicInfoList)
+
+    Netease.Music.musicDetail1(this.musicIds.slice(this.startIndex, this.endIndex)).then(musics => {
+      this.startIndex = this.endIndex;
+      this.endIndex += 100;
+      if (this.endIndex > this.musicIds.length) {
+        this.endIndex = this.musicIds.length;
+      }
+      this.musicInfoList = this.musicInfoList.concat(musics['songs'])
+      this.adapter.notifyDataReload(this.musicInfoList)
+    })
   }
 }

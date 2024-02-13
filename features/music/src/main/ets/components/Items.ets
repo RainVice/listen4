@@ -28,8 +28,7 @@ export struct CoverItem {
           topLeft: RecommendPlaylistItemConstants.BORDER_RADIUS,
           topRight: RecommendPlaylistItemConstants.BORDER_RADIUS
         })
-        .colorBlend(this.model.mainColor)
-
+      // .colorBlend(this.model.mainColor)
       Column() {
         Text(this.text)
           .maxLines(RecommendPlaylistItemConstants.MAX_LINES)
@@ -37,8 +36,10 @@ export struct CoverItem {
           .minFontSize(RecommendPlaylistItemConstants.MIN_FONT_SIZE)
           .fontColor(this.model.fontColor)
           .fontWeight(FontWeight.Bold)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .textAlign(TextAlign.Center)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })// .textAlign(TextAlign.Center)
+          .textAlign(TextAlign.Start)
+          .height(LayoutConstants.FULL_PERCENT)
+          .width(LayoutConstants.FULL_PERCENT)
       }
       .borderRadius({
         bottomLeft: RecommendPlaylistItemConstants.BORDER_RADIUS,
@@ -60,19 +61,10 @@ export struct CoverItem {
 export struct MusicListItem {
   songInfo: object;
   index: number;
-  imageFun: (url: string) => Promise<PicModel>;
-  @State picModel: PicModel = null;
-
-  async aboutToAppear() {
-
-    // this.songInfo = await this.songInfoFun(this.musicId);
-    this.picModel = await this.imageFun(this.songInfo['al']['picUrl']);
-
-  }
 
   build() {
 
-    Row({ space: 5 }) {
+    Row({ space: 10 }) {
 
       Text(`${this.index + 1}`)
         .fontWeight(FontWeight.Bold)
@@ -81,20 +73,21 @@ export struct MusicListItem {
         .width(40)
         .textAlign(TextAlign.Center)
 
-      Image(this.picModel ? this.picModel.image : null)
+      Image(this.songInfo['al']['picUrl'] + '?param=50y50')
         .width(50)
         .height(50)
         .borderRadius(10)
       Column({ space: 5 }) {
-        Text(this.songInfo ? this.songInfo['name'] : '音乐名')
-          .fontSize(20)
+        Text(this.songInfo ? this.songInfo['name'] : '音乐名')// .fontSize(16)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .width(LayoutConstants.FULL_PERCENT)
+          .maxLines(1)
         Text(this.songInfo ? this.songInfo['ar'].map((ar) => ar['name']).join(' | ') : '歌手')
           .fontSize(12)
           .fontColor(Color.Gray)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .width(LayoutConstants.FULL_PERCENT)
+          .maxLines(1)
       }
       .layoutWeight(1)
       .justifyContent(FlexAlign.Start)

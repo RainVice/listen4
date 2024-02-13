@@ -7,7 +7,8 @@ const iv = buffer.from('0102030405060708');
 const presetKey = buffer.from('0CoJUm6Qyw8W8jud');
 const linuxapiKey = buffer.from('rFgB&h#%2?^eDg:Q');
 const base62 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const publicKey = buffer.from('MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDgtQn2JZ34ZC28NWYpAUd98iZ37BUrX/aKzmFbt7clFSs6sXqHauqKWqdtLkF2KexO40H1YTX8z2lSgBBOAxLsvaklV8k4cBFK9snQXE9/DDaFt6Rr7iVZMldczhC0JNgTz+SHXT6CBHuX3e9SdB1Ua44oncaTWz7OBGLbCiK45wIDAQAB');
+const publicKey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDgtQn2JZ34ZC28NWYpAUd98iZ37BUrX/aKzmFbt7clFSs6sXqHauqKWqdtLkF2KexO40H1YTX8z2lSgBBOAxLsvaklV8k4cBFK9snQXE9/DDaFt6Rr7iVZMldczhC0JNgTz+SHXT6CBHuX3e9SdB1Ua44oncaTWz7OBGLbCiK45wIDAQAB';
+const keyU8A = new util.Base64Helper().decodeSync(publicKey);
 const eapiKey = buffer.from('e82ckenh8dichen8')
 
 
@@ -41,9 +42,10 @@ export class crypto {
    * @param key RSA密钥
    * @returns 加密后的数据
    */
-  public static async rsa(data: buffer.Buffer, key: buffer.Buffer): Promise<buffer.Buffer> {
+  public static async rsa(data: buffer.Buffer): Promise<buffer.Buffer> {
     data = buffer.concat([buffer.alloc(128 - data.length), data]);
-    let keyU8A = new util.Base64Helper().decodeSync(new Uint8Array(key.buffer));
+    // let keyU8A = new util.Base64Helper().decodeSync(key);
+    // let keyU8A = new util.Base64Helper().decodeSync(new Uint8Array(key.buffer));
     // 创建加密器
     let cipher: cryptoFramework.Cipher = cryptoFramework.createCipher('RSA1024|NoPadding');
     // 创建RSA密钥生成器
@@ -75,7 +77,7 @@ export class crypto {
     // 对text进行AES加密
     let temp = buffer.from((await this.aes(text, 'cbc', presetKey, iv)).toString('base64'));
     // 对secretKey进行RSA加密
-    let encSecKeyValue = await this.rsa(this.bufferReverse(secretKey), publicKey);
+    let encSecKeyValue = await this.rsa(this.bufferReverse(secretKey));
     // 对temp进行AES解密
     let paramsValue = (await this.aes(temp, 'cbc', secretKey, iv)).toString('base64');
     return {
@@ -109,10 +111,22 @@ export class crypto {
    * @returns 生成的随机字节数据
    */
   public static async randomBytes(size: number): Promise<buffer.Buffer> {
-    let data = buffer.from((await cryptoFramework.createRandom().generateRandom(size)).data);
-    let u8a = new Uint8Array(data.buffer).map((n) => base62.charAt(n % 62).charCodeAt(0))
-    return buffer.from(u8a);
+    return cryptoFramework.createRandom()
+      .generateRandom(size)
+      .then(datablob => datablob.data)
+      .then(data => {
+        let buf = buffer.from(data);
+        let u8a = new Uint8Array(buf.buffer).map((n) => base62.charAt(n % 62).charCodeAt(0))
+        return buffer.from(u8a);
+      })
   }
+
+  // public static async randomBytes(size: number): Promise<buffer.Buffer> {
+  //   let data = buffer.from((await cryptoFramework.createRandom().generateRandom(size)).data);
+  //   let u8a = new Uint8Array(data.buffer).map((n) => base62.charAt(n % 62).charCodeAt(0))
+  //   return buffer.from(u8a);
+  // }
+
 
   /**
    * 解密指定的字节数据

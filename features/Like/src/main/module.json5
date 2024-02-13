@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "Like",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

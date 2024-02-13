@@ -2,6 +2,8 @@ import { crypto } from '../utils/crypto';
 import http from '@ohos.net.http';
 import { NeteaseConstants } from '../constants/NeteaseConstants';
 
+const httpResponseCache = http.createHttpResponseCache();
+
 const config = {
   "anonymous_token": "bf8bfeabb1aa84f9c8c3906c04a04fb864322804c83f5d607e91a04eae463c9436bd1a17ec353cf780b396507a3f7464e8a60f4bbc019437993166e004087dd32d1490298caf655c2353e58daa0bc13cc7d5c198250968580b12c1b8817e3f5c807e650dd04abd3fb8130b7ae43fcc5b",
   "resourceTypeMap": {
@@ -54,12 +56,14 @@ export class Api {
       url = ('https://music.163.com/' + url).replace('m//', 'm/');
     }
     let headers = this.getHeader(method, url, options);
+    // this.setCookie(headers, options).then(cookies => headers = cookies)
     headers = await this.setCookie(headers, options);
 
     // 加密
     if (options.crypto === 'weapi') {
       let csrfToken = this.getCookie()['__csrf']
       data['csrf_token'] = csrfToken ? csrfToken : ''
+      // crypto.weapi(data).then(res => data = res)
       data = await crypto.weapi(data)
       url = url.replace(/\w*api/, 'weapi')
     }
@@ -111,14 +115,25 @@ export class Api {
       extraData: Object.keys(data)
         .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]),)
         .join('&'),
-      readTimeout: 1000,
-      connectTimeout: 1000,
-      expectDataType: options.crypto === 'eapi' ? http.HttpDataType.ARRAY_BUFFER : http.HttpDataType.OBJECT,
+      readTimeout: 5000,
+      connectTimeout: 5000,
+    }
+
+    if (options.crypto === 'eapi') {
+      config.expectDataType = http.HttpDataType.ARRAY_BUFFER;
     }
 
     // todo 添加代理功能
     // ...
-    return http.createHttp().request(url, config)
+    let connect = http.createHttp()
+    return connect.request(url, config).then(res => {
+      httpResponseCache.flush()
+      connect.destroy()
+      return res
+    }).catch(err => {
+      connect.destroy()
+      return err
+    })
   }
 
   /**
@@ -202,14 +217,6 @@ export class Api {
       NMTID: (await crypto.randomBytes(16)).toString('hex'),
       _ntes_nuid: (await crypto.randomBytes(16)).toString('hex'),
     }
-
-    // cookie = {
-    //   ...options.cookie,
-    //   ...cookie,
-    //   __remember_me: true,
-    //   NMTID: (await crypto.randomBytes(16)).toString('hex'),
-    //   _ntes_nuid: (await crypto.randomBytes(16)).toString('hex'),
-    // }
     if (!newCookie['MUSIC_U'] && !newCookie['MUSIC_A']) {
       newCookie['MUSIC_A'] = config.anonymous_token;
     }

@@ -53,12 +53,16 @@ export struct MusicRecommend {
 
 
         }
+        // .height(LayoutConstants.FULL_PERCENT)
+        .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Start)
         .width(LayoutConstants.FULL_PERCENT)
       }
+      .align(Alignment.Top)
       .padding({ left: 20, right: 20 })
       .layoutWeight(1)
     }
+    .justifyContent(FlexAlign.Start)
     .height(LayoutConstants.FULL_PERCENT)
     .width(LayoutConstants.FULL_PERCENT)
   }

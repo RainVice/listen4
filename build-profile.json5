@@ -56,6 +56,10 @@
     {
       "name": "apis",
       "srcPath": "./features/apis"
+    },
+    {
+      "name": "Like",
+      "srcPath": "./features/Like"
     }
   ]
 }

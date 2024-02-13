@@ -11,6 +11,7 @@ import { NeteaseConstants } from '@listen4/apis';
 
 export default class EntryAbility extends UIAbility {
   listen4Preferences: PreferencesUtil;
+
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
@@ -21,7 +22,8 @@ export default class EntryAbility extends UIAbility {
     this.listen4Preferences = new PreferencesUtil(this.context, this.context.abilityInfo.moduleName);
     this.listen4Preferences.has(DataConstants.PREFERENCES_COOKIE_KEY).then(async (has) => {
       if (has) {
-        let cookie: object = JSON.parse((await this.listen4Preferences.get(DataConstants.PREFERENCES_COOKIE_KEY, "{}")) as string)
+        let json = (await this.listen4Preferences.get(DataConstants.PREFERENCES_COOKIE_KEY, "{}")) as string;
+        let cookie: object = JSON.parse(json)
         AppStorage.SetOrCreate<object>(NeteaseConstants.NETEASE_COOKIE, cookie);
       } else {
         await Netease.User.anonimous();
