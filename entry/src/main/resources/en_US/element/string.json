@@ -19,6 +19,18 @@
     {
       "name": "bottom_navigation_love",
       "value": "love"
+    },
+    {
+      "name": "login_text",
+      "value": "login"
+    },
+    {
+      "name": "login_username_tip",
+      "value": "phone/email/id"
+    },
+    {
+      "name": "login_password_tip",
+      "value": "password"
     }
   ]
 }

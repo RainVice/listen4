@@ -9,6 +9,7 @@
   "dependencies": {
     "@listen4/common": "file:../common",
     "@listen4/music": "file:../features/music",
-    "@listen4/apis": "file:../features/apis"
+    "@listen4/apis": "file:../features/apis",
+    "@listen4/Like": "file:../features/Like",
   }
 }

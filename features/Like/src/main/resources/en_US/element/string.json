@@ -3,6 +3,14 @@
     {
       "name": "page_show",
       "value": "page from package"
+    },
+    {
+      "name": "like_title_bar",
+      "value": "like"
+    },
+    {
+      "name": "like_playing",
+      "value": "playing"
     }
   ]
 }

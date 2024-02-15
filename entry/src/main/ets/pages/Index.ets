@@ -2,6 +2,7 @@ import { BreakpointConstants, BreakpointSystem, LayoutConstants } from '@listen4
 import { IndexConstants } from '../constants/EntryConstants';
 import { bottomInfo, BottomNavigationInfo } from '../viewmodel/BottomNavigationData';
 import { MusicRecommend } from '@listen4/music';
+import { Like } from '@listen4/Like';
 
 @Entry
 @Component
@@ -30,6 +31,8 @@ struct Index {
         .tabBar(this.BottomNavigation(bottomInfo[IndexConstants.HOME_INDEX]))
 
         TabContent() {
+          // todo 播放页面
+          // Like()
         }
         .tabBar(this.BottomNavigation(bottomInfo[IndexConstants.LOVE_INDEX]))
 

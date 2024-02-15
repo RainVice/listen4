@@ -3,6 +3,14 @@
     {
       "name": "page_show",
       "value": "page from package"
+    },
+    {
+      "name": "like_title_bar",
+      "value": "收藏"
+    },
+    {
+      "name": "like_playing",
+      "value": "正在播放"
     }
   ]
 }

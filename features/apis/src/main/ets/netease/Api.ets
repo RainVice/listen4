@@ -2,8 +2,6 @@ import { crypto } from '../utils/crypto';
 import http from '@ohos.net.http';
 import { NeteaseConstants } from '../constants/NeteaseConstants';
 
-const httpResponseCache = http.createHttpResponseCache();
-
 const config = {
   "anonymous_token": "bf8bfeabb1aa84f9c8c3906c04a04fb864322804c83f5d607e91a04eae463c9436bd1a17ec353cf780b396507a3f7464e8a60f4bbc019437993166e004087dd32d1490298caf655c2353e58daa0bc13cc7d5c198250968580b12c1b8817e3f5c807e650dd04abd3fb8130b7ae43fcc5b",
   "resourceTypeMap": {
@@ -105,7 +103,7 @@ export class Api {
         .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(header[key]),)
         .join('; ');
       data['header'] = header
-      data = await crypto.eapi(url, data)
+      data = await crypto.eapi(options.url, data)
       url = url.replace(/\w*api/, 'eapi')
     }
     // 配置
@@ -119,15 +117,14 @@ export class Api {
       connectTimeout: 5000,
     }
 
-    if (options.crypto === 'eapi') {
-      config.expectDataType = http.HttpDataType.ARRAY_BUFFER;
-    }
+    // if (options.crypto === 'eapi') {
+    //   config.expectDataType = http.HttpDataType.ARRAY_BUFFER;
+    // }
 
     // todo 添加代理功能
     // ...
     let connect = http.createHttp()
     return connect.request(url, config).then(res => {
-      httpResponseCache.flush()
       connect.destroy()
       return res
     }).catch(err => {

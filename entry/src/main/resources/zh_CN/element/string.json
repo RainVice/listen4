@@ -19,6 +19,18 @@
     {
       "name": "bottom_navigation_love",
       "value": "收藏"
+    },
+    {
+      "name": "login_text",
+      "value": "登录"
+    },
+    {
+      "name": "login_username_tip",
+      "value": "手机号/邮箱/账号"
+    },
+    {
+      "name": "login_password_tip",
+      "value": "密码"
     }
   ]
 }

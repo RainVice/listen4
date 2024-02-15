@@ -21,19 +21,39 @@ export class crypto {
    * @param iv 初始化向量
    * @returns 加密后的数据
    */
+  // public static async aes(data: buffer.Buffer, mode: string, key: buffer.Buffer, iv: buffer.Buffer): Promise<buffer.Buffer> {
+  //   // 创建AES128密钥生成器
+  //   let symKeyGenerator: cryptoFramework.SymKeyGenerator = cryptoFramework.createSymKeyGenerator('AES128');
+  //   // 创建初始化向量IV参数
+  //   let ivParam: cryptoFramework.IvParamsSpec = { iv: { data: new Uint8Array(iv.buffer) }, algName: 'IvParamsSpec' }
+  //   // 创建加密器
+  //   let cipher: cryptoFramework.Cipher = cryptoFramework.createCipher('AES128|' + mode.toUpperCase());
+  //   // 获取密钥
+  //   let symKey: cryptoFramework.SymKey = await symKeyGenerator.convertKey({ data: new Uint8Array(key.buffer) });
+  //   // 初始化加密器为加密模式
+  //   await cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, symKey, ivParam);
+  //   // 获取最后加密数据
+  //   return buffer.from((await cipher.doFinal({ data: new Uint8Array(data.buffer) })).data);
+  // }
+
   public static async aes(data: buffer.Buffer, mode: string, key: buffer.Buffer, iv: buffer.Buffer): Promise<buffer.Buffer> {
     // 创建AES128密钥生成器
     let symKeyGenerator: cryptoFramework.SymKeyGenerator = cryptoFramework.createSymKeyGenerator('AES128');
     // 创建初始化向量IV参数
-    let ivParam: cryptoFramework.IvParamsSpec = { iv: { data: new Uint8Array(iv.buffer) }, algName: 'IvParamsSpec' }
+    let ivParam: cryptoFramework.IvParamsSpec = iv.length === 0 ? null : {
+      iv: { data: new Uint8Array(iv.buffer) },
+      algName: 'IvParamsSpec'
+    }
     // 创建加密器
     let cipher: cryptoFramework.Cipher = cryptoFramework.createCipher('AES128|' + mode.toUpperCase());
     // 获取密钥
-    let symKey: cryptoFramework.SymKey = await symKeyGenerator.convertKey({ data: new Uint8Array(key.buffer) });
-    // 初始化加密器为加密模式
-    await cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, symKey, ivParam);
-    // 获取最后加密数据
-    return buffer.from((await cipher.doFinal({ data: new Uint8Array(data.buffer) })).data);
+    return symKeyGenerator.convertKey({ data: new Uint8Array(key.buffer) }).then(symKey => {
+      return cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, symKey, ivParam);
+    }).then(() => {
+      return cipher.doFinal({ data: new Uint8Array(data.buffer) });
+    }).then((dataBlob) => {
+      return buffer.from(dataBlob.data)
+    })
   }
 
   /**
@@ -42,6 +62,18 @@ export class crypto {
    * @param key RSA密钥
    * @returns 加密后的数据
    */
+  // public static async rsa(data: buffer.Buffer): Promise<buffer.Buffer> {
+  //   data = buffer.concat([buffer.alloc(128 - data.length), data]);
+  //   // let keyU8A = new util.Base64Helper().decodeSync(key);
+  //   // let keyU8A = new util.Base64Helper().decodeSync(new Uint8Array(key.buffer));
+  //   // 创建加密器
+  //   let cipher: cryptoFramework.Cipher = cryptoFramework.createCipher('RSA1024|NoPadding');
+  //   // 创建RSA密钥生成器
+  //   let asyKeyGenerator: cryptoFramework.AsyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024');
+  //   let keyPair: cryptoFramework.KeyPair = await asyKeyGenerator.convertKey({ data: keyU8A }, null);
+  //   await cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, keyPair.pubKey, null);
+  //   return buffer.from((await cipher.doFinal({ data: new Uint8Array(data.buffer) })).data);
+  // }
   public static async rsa(data: buffer.Buffer): Promise<buffer.Buffer> {
     data = buffer.concat([buffer.alloc(128 - data.length), data]);
     // let keyU8A = new util.Base64Helper().decodeSync(key);
@@ -50,17 +82,40 @@ export class crypto {
     let cipher: cryptoFramework.Cipher = cryptoFramework.createCipher('RSA1024|NoPadding');
     // 创建RSA密钥生成器
     let asyKeyGenerator: cryptoFramework.AsyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024');
-    let keyPair: cryptoFramework.KeyPair = await asyKeyGenerator.convertKey({ data: keyU8A }, null);
-    await cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, keyPair.pubKey, null);
-    return buffer.from((await cipher.doFinal({ data: new Uint8Array(data.buffer) })).data);
+    // 加密
+    return asyKeyGenerator.convertKey({ data: keyU8A }, null).then((keyPair) => {
+      return cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, keyPair.pubKey, null)
+    }).then(() => {
+      return cipher.doFinal({ data: new Uint8Array(data.buffer) })
+    }).then((dataBlob) => {
+      return buffer.from(dataBlob.data)
+    })
   }
+
+
+  public static async md5(text: string): Promise<string> {
+    let md: cryptoFramework.Md = cryptoFramework.createMd('MD5')
+    await md.update({ data: this.strToUint8Array(text) })
+    let dataBlob = await md.digest()
+    return buffer.from(dataBlob.data).toString('hex')
+  }
+
 
   public static async linuxapi(data: object = {}): Promise<object> {
     return {};
   }
 
-  public static async eapi(url: string, data: object = {}): Promise<object> {
-    return {};
+  public static async eapi(url: string, data: any): Promise<object> {
+    const text = typeof data === 'object' ? JSON.stringify(data) : data;
+    const message = `nobody${url}use${text}md5forencrypt`;
+
+    let digest = await this.md5(message);
+    const temp = `${url}-36cd479b6b5-${text}-36cd479b6b5-${digest}`
+    let params = (await this.aes(buffer.from(temp), 'ecb', eapiKey, buffer.from(''))).toString('hex').toUpperCase()
+    return {
+      params: params
+    }
+
   }
 
   /**

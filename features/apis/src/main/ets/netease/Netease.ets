@@ -2,6 +2,7 @@ import http from '@ohos.net.http';
 import { NeteaseConstants } from '../constants/NeteaseConstants';
 import { Api, Options } from './Api';
 import { DataKeys, KVDBUtil } from '@listen4/common';
+import { crypto } from '../utils/crypto';
 
 export namespace Netease {
 
@@ -30,23 +31,54 @@ export namespace Netease {
    * 用户相关接口
    */
   export class User {
-    public static async
+    /**
+     * 手机验证码登录
+     * @param phone 电话
+     * @param code 验证码
+     */
+    public static async cellphone(phone: string, code: string) {
+      // {'captcha': '1516', 'countrycode': '86', 'phone': '17379633306'}
+      let data = {
+        'captcha': code,
+        'countrycode': '86',
+        'phone': phone,
+        'rememberLogin': true
+      }
+
+      Api.send(http.RequestMethod.POST, 'weapi/login/cellphone', data).then((response) => {
+        return
+      })
+        .catch((err) => {
+          return
+        })
+    }
+
+    public static async send(phone: string) {
+      // {'cellphone': '17379633306', 'ctcode': '86'}
+      let data = {
+        'cellphone': phone,
+        'ctcode': '86'
+      }
+
+      Api.send(http.RequestMethod.POST, 'weapi/sms/captcha/sent', data).then((response) => {
+        return
+      })
+    }
 
     /**
-     * 邮箱或手机登陆
+     * todo 邮箱或手机登陆,会跳验证，暂时无法使用
      * @param username 账号
      * @param password 密码
      * @param loginOption 登陆选项
      */
-    public static Login(username: string, password: string, loginOption: LoginOption = LoginOption.Phone) {
+    public static async Login(username: string, password: string, loginOption: LoginOption = LoginOption.Phone) {
 
-      // md5 加密 password
-      // password = crypto.createHash('md5').update(password).digest('hex');
+      // md5 加密
+      password = await crypto.md5(password);
 
       // 设置数据
-      let data;
       if (loginOption === LoginOption.Phone) {
-        data = {
+        let data = {
           'phone': username,
           'password': password,
           'countrycode': '86',
@@ -54,15 +86,30 @@ export namespace Netease {
         }
       }
       else if (loginOption === LoginOption.Email) {
-        data = {
+        let data = {
           'username': username,
           'password': password,
           'rememberLogin': 'true'
         }
+        let options: Options = {
+          crypto: 'weapi',
+          ua: 'pc',
+          cookie: {
+            os: DeviceOption.IOS,
+            appver: '8.7.01'
+          }
+        }
+
+        Api.send(http.RequestMethod.POST, 'api/login', data, options).then((response) => {
+          return
+        })
+
       }
       else {
         return;
       }
+
+
     }
 
     /**
@@ -129,7 +176,11 @@ export namespace Netease {
           throw new Error('network');
         }
         let json = await kvdb.get('PlayList.personalized') as string;
-        return (JSON.parse(json))['result'];
+        let temp = JSON.parse(json)
+        if (typeof temp === 'string') {
+          return JSON.parse(temp)['result']
+        }
+        return temp['result'];
       }
       catch (err) {
         // 没有本地缓存，请求
@@ -176,7 +227,26 @@ export namespace Netease {
    * 音乐相关接口
    */
   export class Music {
-    public static async
+    /**
+     * todo 获取歌曲url
+     * @param ids 歌曲id
+     * @returns
+     */
+    public static async songUrl(ids: string[]) {
+      const data = {
+        ids: '[' + ids.map((id) => id).join(',') + ']',
+        br: 999000
+      }
+      Api.send(http.RequestMethod.POST, 'eapi/song/enhance/player/url', data, {
+        crypto: 'eapi',
+        cookie: { os: 'pc' },
+        url: '/api/song/enhance/player/url'
+      }).then((response) => {
+        return
+      }).catch((err) => {
+        return
+      })
+    }
 
     /**
      * 获取最新音乐
@@ -190,7 +260,11 @@ export namespace Netease {
           throw new Error('network');
         }
         let json = await kvdb.get('Music.newMusic') as string;
-        return JSON.parse(json)['result'];
+        let temp = JSON.parse(json)
+        if (typeof temp === 'string') {
+          return JSON.parse(temp)['result']
+        }
+        return temp['result'];
       } catch (err) {
         let url = 'api/personalized/newsong'
         const data = {
