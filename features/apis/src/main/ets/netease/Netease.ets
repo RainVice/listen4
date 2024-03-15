@@ -37,7 +37,6 @@ export namespace Netease {
      * @param code 验证码
      */
     public static async cellphone(phone: string, code: string) {
-      // {'captcha': '1516', 'countrycode': '86', 'phone': '17379633306'}
       let data = {
         'captcha': code,
         'countrycode': '86',
@@ -54,7 +53,6 @@ export namespace Netease {
     }
 
     public static async send(phone: string) {
-      // {'cellphone': '17379633306', 'ctcode': '86'}
       let data = {
         'cellphone': phone,
         'ctcode': '86'
